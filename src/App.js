@@ -46,7 +46,6 @@ function App() {
     setCompletedWordsIdx([]);
     setWords(generateWords);
     setCountDown(SECONDS);
-    setCurrentInput("");
     setCurrentChar("");
     setCurrentWordIdx(0);
     setCurrentCharIdx(-1);
@@ -62,6 +61,7 @@ function App() {
       setCountDown(prevTime => {
         if (prevTime === 1) {
           clearInterval(intervalId);
+          setCurrentInput("");
           setIsStart(false);
           setIsDone(true);
           return 0;
