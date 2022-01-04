@@ -1,4 +1,5 @@
 {
+  "homepage": "http://vuquangtuan123.github.io/typing-speed",
   "name": "typing-speed",
   "version": "0.1.0",
   "private": true,
@@ -11,6 +12,7 @@
     "@testing-library/user-event": "^12.0.2",
     "autoprefixer": "^10.4.1",
     "framer-motion": "^4.0.0",
+    "gh-pages": "^3.2.3",
     "postcss": "^8.4.5",
     "random-words": "^1.1.1",
     "react": "^17.0.2",
@@ -21,6 +23,8 @@
     "web-vitals": "^0.2.2"
   },
   "scripts": {
+    "predeploy": "yarn run build",
+    "deploy": "gh-pages -d build",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
