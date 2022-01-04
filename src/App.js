@@ -27,6 +27,19 @@ function App() {
     return new Array(NUMBER_OF_WORDS).fill(null).map(() => randomWords());
   };
 
+  const start = () => {
+    let intervalId = setInterval(() => {
+      setCountDown(prevTime => {
+        if (prevTime === 0) {
+          clearInterval(intervalId);
+          return 0;
+        } else {
+          return prevTime - 1;
+        }
+      });
+    }, 1000);
+  };
+
   return (
     <ChakraProvider theme={theme}>
       <Container maxW="container.xl">
@@ -37,6 +50,7 @@ function App() {
           alignItems="center"
           justifyContent="space-between"
           p="4"
+          mb="6"
           w="100%"
           css={{ backdropFilter: "blur(10px)" }}
           zIndex={1}
@@ -44,14 +58,14 @@ function App() {
           <Heading>Typing Speed App</Heading>
           <ColorModeSwitcher />
         </Box>
-        <Center>
-          <Heading colorScheme="teal">60</Heading>
+        <Center my="5">
+          <Heading colorScheme="teal">{countDown}</Heading>
         </Center>
         <Box>
           <Input type="text" variant="flushed" />
         </Box>
         <Box marginY="5">
-          <Button colorScheme="blue" w="100%">
+          <Button colorScheme="blue" w="100%" onClick={start}>
             Start
           </Button>
         </Box>
