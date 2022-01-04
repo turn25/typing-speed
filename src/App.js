@@ -24,9 +24,12 @@ function App() {
   const [isStart, setIsStart] = useState(false);
   const [isDone, setIsDone] = useState(false);
   const [currentInput, setCurrentInput] = useState("");
-  const [currentWorldIdx, setCurrentWordIdx] = useState(0);
+  const [currentWordIdx, setCurrentWordIdx] = useState(0);
+  const [currentCharIdx, setCurrentCharIdx] = useState(-1);
+  const [currentChar, setCurrentChar] = useState("");
   const [correct, setCorrect] = useState(0);
   const [incorrect, setIncorrect] = useState(0);
+  const [completedWordsIdx, setCompletedWordsIdx] = useState([]);
 
   const inputRef = useRef(null);
 
@@ -40,9 +43,13 @@ function App() {
   };
 
   const handleResetState = () => {
+    setCompletedWordsIdx([]);
     setWords(generateWords);
     setCountDown(SECONDS);
     setCurrentInput("");
+    setCurrentChar("");
+    setCurrentWordIdx(0);
+    setCurrentCharIdx(-1);
     setCorrect(0);
     setIncorrect(0);
     setIsStart(true);
@@ -65,23 +72,59 @@ function App() {
     }, 1000);
   };
 
-  const handleKeyDown = ({ keyCode }) => {
-    //spacebar
-    if (keyCode === 32) {
+  const handleKeyDown = e => {
+    if (e.keyCode === 32) {
+      //spacebar
       checkMatch();
       setCurrentInput("");
+      setCompletedWordsIdx(prevWordsIdx => [...prevWordsIdx, currentWordIdx]);
       setCurrentWordIdx(currentIdx => currentIdx + 1);
+      setCurrentCharIdx(-1);
+    } else if (e.keyCode === 8) {
+      //backspace
+      if (currentCharIdx === -1) return;
+      setCurrentCharIdx(currentCharIdx => currentCharIdx - 1);
+      setCurrentChar("");
+    } else {
+      setCurrentCharIdx(currentCharIdx => currentCharIdx + 1);
+      setCurrentChar(e.key);
     }
   };
 
   const checkMatch = () => {
-    const wordToCompare = words[currentWorldIdx];
+    const wordToCompare = words[currentWordIdx];
     const isMatch = wordToCompare === currentInput.trim(); //remove blank spacebar
     if (isMatch) {
       setCorrect(correct => correct + 1);
     } else {
       setIncorrect(incorrect => incorrect + 1);
     }
+  };
+
+  const getWordClass = idx => {
+    if (completedWordsIdx && completedWordsIdx.includes(idx)) {
+      return "line-through opacity-50";
+    } else return "opacity-100";
+  };
+
+  const getCharClass = (wordIdx, charIdx, char) => {
+    if (wordIdx === currentWordIdx && charIdx === currentCharIdx && currentChar)
+      if (char === currentChar) return "bg-green-500";
+      else return "bg-red-500";
+    // show error when input word length > word length
+    else if (
+      wordIdx === currentWordIdx &&
+      currentCharIdx > words[currentWordIdx].length - 1
+    )
+      return "bg-red-500";
+    //highlight when backspace
+    else if (
+      wordIdx === currentWordIdx &&
+      charIdx === currentCharIdx &&
+      !currentChar
+    )
+      return "bg-violet-500";
+    else return "";
   };
 
   return (
@@ -114,6 +157,7 @@ function App() {
             onChange={e => setCurrentInput(e.target.value)}
             disabled={!isStart}
             ref={inputRef}
+            autoComplete="off"
           />
         </Box>
         <Box marginY="5">
@@ -133,9 +177,14 @@ function App() {
             {words.map((word, idx) => (
               //get every character of the word
               <React.Fragment key={idx}>
-                <span>
+                <span className={`${getWordClass(idx)} transition `}>
                   {word.split("").map((char, index) => (
-                    <span key={index}>{char}</span>
+                    <span
+                      key={index}
+                      className={getCharClass(idx, index, char)}
+                    >
+                      {char}
+                    </span>
                   ))}
                 </span>
                 <span> </span>
@@ -145,10 +194,14 @@ function App() {
         </Collapse>
 
         <Collapse in={isDone} animateOpacity unmountOnExit>
-          <SimpleGrid columns={2} spacing={1} my={10}>
+          <SimpleGrid columns={[1, null, 3]} spacing={1} my={10}>
             <Box textAlign="center">
-              <Text fontWeight="bold">Word per minute:</Text>
+              <Text fontWeight="bold">Word(s) per minute:</Text>
               <Heading>{correct}</Heading>
+            </Box>
+            <Box textAlign="center">
+              <Text fontWeight="bold">Incorect Word(s):</Text>
+              <Heading>{incorrect}</Heading>
             </Box>
             <Box textAlign="center">
               <Text fontWeight="bold">Accuracy:</Text>
