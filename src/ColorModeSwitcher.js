@@ -1,23 +1,33 @@
-import React from 'react';
-import { useColorMode, useColorModeValue, IconButton } from '@chakra-ui/react';
-import { FaMoon, FaSun } from 'react-icons/fa';
+import React from "react";
+import { useColorMode, useColorModeValue, IconButton } from "@chakra-ui/react";
+import { AnimatePresence, motion } from "framer-motion";
+import { FaMoon, FaSun } from "react-icons/fa";
 
 export const ColorModeSwitcher = props => {
   const { toggleColorMode } = useColorMode();
-  const text = useColorModeValue('dark', 'light');
-  const SwitchIcon = useColorModeValue(FaMoon, FaSun);
+  const activeButton = useColorModeValue(
+    "0 0 0 3px rgba(10, 125, 230, 0.4)",
+    "0 0 0 3px rgba(110, 125, 230, 0.8)"
+  );
 
   return (
-    <IconButton
-      size="md"
-      fontSize="lg"
-      aria-label={`Switch to ${text} mode`}
-      variant="ghost"
-      color="current"
-      marginLeft="2"
-      onClick={toggleColorMode}
-      icon={<SwitchIcon />}
-      {...props}
-    />
+    <AnimatePresence exitBeforeEnter>
+      <motion.div
+        style={{ display: "inline-block" }}
+        key={useColorModeValue("light", "dark")}
+        initial={{ x: 10, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        exit={{ x: -10, opacity: 0 }}
+        transition={{ duration: 0.3 }}
+      >
+        <IconButton
+          aria-label="Toggle theme"
+          colorScheme={useColorModeValue("purple", "orange")}
+          icon={useColorModeValue(<FaMoon />, <FaSun />)}
+          onClick={toggleColorMode}
+          _focus={{ boxShadow: activeButton }}
+        />
+      </motion.div>
+    </AnimatePresence>
   );
 };

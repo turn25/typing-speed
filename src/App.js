@@ -1,40 +1,75 @@
-import React from 'react';
+import React, { useState, useEffect } from "react";
+import randomWords from "random-words";
 import {
   ChakraProvider,
+  Container,
   Box,
-  Text,
-  Link,
-  VStack,
-  Code,
-  Grid,
+  Heading,
+  Center,
+  Input,
+  Button,
   theme,
-} from '@chakra-ui/react';
-import { ColorModeSwitcher } from './ColorModeSwitcher';
-import { Logo } from './Logo';
+} from "@chakra-ui/react";
+import { ColorModeSwitcher } from "./ColorModeSwitcher";
+
+const NUMBER_OF_WORDS = 200;
+const SECONDS = 60;
 
 function App() {
+  const [words, setWords] = useState([]);
+  const [countDown, setCountDown] = useState(SECONDS);
+
+  useEffect(() => {
+    setWords(generateWords);
+  }, []);
+
+  const generateWords = () => {
+    return new Array(NUMBER_OF_WORDS).fill(null).map(() => randomWords());
+  };
+
   return (
     <ChakraProvider theme={theme}>
-      <Box textAlign="center" fontSize="xl">
-        <Grid minH="100vh" p={3}>
-          <ColorModeSwitcher justifySelf="flex-end" />
-          <VStack spacing={8}>
-            <Logo h="40vmin" pointerEvents="none" />
-            <Text>
-              Edit <Code fontSize="xl">src/App.js</Code> and save to reload.
-            </Text>
-            <Link
-              color="teal.500"
-              href="https://chakra-ui.com"
-              fontSize="2xl"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learn Chakra
-            </Link>
-          </VStack>
-        </Grid>
-      </Box>
+      <Container maxW="container.xl">
+        <Box
+          as="nav"
+          display="flex"
+          wrap="wrap"
+          alignItems="center"
+          justifyContent="space-between"
+          p="4"
+          w="100%"
+          css={{ backdropFilter: "blur(10px)" }}
+          zIndex={1}
+        >
+          <Heading>Typing Speed App</Heading>
+          <ColorModeSwitcher />
+        </Box>
+        <Center>
+          <Heading colorScheme="teal">60</Heading>
+        </Center>
+        <Box>
+          <Input type="text" variant="flushed" />
+        </Box>
+        <Box marginY="5">
+          <Button colorScheme="blue" w="100%">
+            Start
+          </Button>
+        </Box>
+        <Box
+          padding="5"
+          marginY="5"
+          rounded="md"
+          shadow="xl"
+          textAlign="justify"
+        >
+          {words.map((word, idx) => (
+            <span key={idx}>{word} </span>
+          ))}
+        </Box>
+        <Center textColor="gray.500">
+          &copy; {new Date().getFullYear()} Tuan Vu.
+        </Center>
+      </Container>
     </ChakraProvider>
   );
 }
