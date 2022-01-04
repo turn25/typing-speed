@@ -1,3 +1,7 @@
+## LIVE DEMO [vuquangtuan123.github.io/typing-speed/](https://vuquangtuan123.github.io/typing-speed)
+
+#
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
