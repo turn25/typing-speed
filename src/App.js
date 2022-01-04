@@ -6,6 +6,7 @@ import {
   Box,
   Heading,
   Center,
+  Collapse,
   Input,
   Button,
   theme,
@@ -18,6 +19,9 @@ const SECONDS = 60;
 function App() {
   const [words, setWords] = useState([]);
   const [countDown, setCountDown] = useState(SECONDS);
+  const [isLoading, setIsLoading] = useState(false);
+  const [currentInput, setCurrentInput] = useState("");
+  const [currentWorldIdx, setCurrentWordIdx] = useState(0);
 
   useEffect(() => {
     setWords(generateWords);
@@ -28,16 +32,36 @@ function App() {
   };
 
   const start = () => {
+    setCountDown(SECONDS);
+    setIsLoading(true);
     let intervalId = setInterval(() => {
       setCountDown(prevTime => {
         if (prevTime === 0) {
           clearInterval(intervalId);
+          setIsLoading(false);
+
           return 0;
         } else {
           return prevTime - 1;
         }
       });
     }, 1000);
+  };
+
+  const handleKeyDown = ({ keyCode }) => {
+    //spacebar
+    if (keyCode === 32) {
+      checkMatch();
+      setCurrentInput("");
+      setCurrentWordIdx(currentIdx => currentIdx + 1);
+    }
+  };
+
+  const checkMatch = () => {
+    console.log(currentInput);
+    const wordToCompare = words[currentWorldIdx];
+    const doesItMatch = wordToCompare === currentInput.trim(); //remove blank spacebar
+    console.log(doesItMatch);
   };
 
   return (
@@ -52,7 +76,6 @@ function App() {
           p="4"
           mb="6"
           w="100%"
-          css={{ backdropFilter: "blur(10px)" }}
           zIndex={1}
         >
           <Heading>Typing Speed App</Heading>
@@ -62,27 +85,55 @@ function App() {
           <Heading colorScheme="teal">{countDown}</Heading>
         </Center>
         <Box>
-          <Input type="text" variant="flushed" />
+          <Input
+            name="wordInput"
+            type="text"
+            variant="flushed"
+            value={currentInput}
+            onKeyDown={handleKeyDown}
+            onChange={e => setCurrentInput(e.target.value)}
+          />
         </Box>
         <Box marginY="5">
-          <Button colorScheme="blue" w="100%" onClick={start}>
+          <Button
+            colorScheme="blue"
+            w="100%"
+            shadow="md"
+            isLoading={isLoading}
+            loadingText="Starting"
+            onClick={start}
+          >
             Start
           </Button>
         </Box>
+        <Collapse in={isLoading} animateOpacity unmountOnExit>
+          <Box padding="5" rounded="md" shadow="xl" textAlign="justify">
+            {words.map((word, idx) => (
+              //get every character of the word
+              <React.Fragment key={idx}>
+                <span>
+                  {word.split("").map((char, index) => (
+                    <span key={index}>{char}</span>
+                  ))}
+                </span>
+                <span> </span>
+              </React.Fragment>
+            ))}
+          </Box>
+        </Collapse>
         <Box
-          padding="5"
-          marginY="5"
-          rounded="md"
-          shadow="xl"
-          textAlign="justify"
+          textColor="gray.500"
+          position="fixed"
+          bottom="0"
+          left="0"
+          right="0"
+          display="flex"
+          w="100%"
+          justifyContent="center"
+          css={{ backdropFilter: "blur(10px)" }}
         >
-          {words.map((word, idx) => (
-            <span key={idx}>{word} </span>
-          ))}
-        </Box>
-        <Center textColor="gray.500">
           &copy; {new Date().getFullYear()} Tuan Vu.
-        </Center>
+        </Box>
       </Container>
     </ChakraProvider>
   );
