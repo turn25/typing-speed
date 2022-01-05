@@ -88,8 +88,6 @@ function App() {
   };
 
   const handleKeyDown = e => {
-    const key = currentInput.slice(currentCharIdx, currentCharIdx + 1);
-
     if (e.keyCode === 229) return;
 
     if (e.keyCode === 32 || e.keyCode === 13) {
@@ -105,7 +103,7 @@ function App() {
       setCurrentChar("");
     } else {
       setCurrentCharIdx(currentCharIdx => currentCharIdx + 1);
-      setCurrentChar(key);
+      setCurrentChar(e.key);
     }
   };
 
