@@ -49,9 +49,15 @@ function App() {
   const cardBg = useColorModeValue("#ebf8ff", "gray.700");
 
   useEffect(() => {
-    //focus to input when click on start btn
+    // focus to input when click on start btn
     if (isStart) inputRef.current.focus();
   }, [isStart]);
+
+  // Update mobile visual
+  // update current char when current input changes
+  // useEffect(() => {
+  //   setCurrentChar(currentInput.slice(currentCharIdx, currentCharIdx + 1));
+  // }, [currentInput]);
 
   const generateWords = () => {
     return new Array(NUMBER_OF_WORDS).fill(null).map(() => randomWords());
@@ -97,7 +103,7 @@ function App() {
       setCurrentWordIdx(currentIdx => currentIdx + 1);
       setCurrentCharIdx(-1);
     } else if (e.keyCode === 8) {
-      //backspace
+      // backspace
       if (currentCharIdx === -1) return;
       setCurrentCharIdx(currentCharIdx => currentCharIdx - 1);
       setCurrentChar("");
@@ -175,7 +181,7 @@ function App() {
           variant="flushed"
           value={currentInput}
           onKeyDown={handleKeyDown}
-          onChange={e => setCurrentInput(e.target.value.split(" ").join(""))} //remove blank spacebar when reset value
+          onChange={e => setCurrentInput(e.target.value.split(" ").join(""))} // remove blank spacebar when reset value
           disabled={!isStart}
           ref={inputRef}
           autoComplete="off"
@@ -203,7 +209,7 @@ function App() {
           fontSize="20"
         >
           {words.map((word, idx) => (
-            //get every character of the word
+            // get every character of the word
             <React.Fragment key={idx}>
               <span className={`${getWordClass(idx)} transition `}>
                 {word.split("").map((char, index) => (
@@ -243,6 +249,19 @@ function App() {
           </Box>
         </SimpleGrid>
       </Collapse>
+
+      <Box
+        my="5"
+        padding="5"
+        rounded="md"
+        shadow="xl"
+        bg={useColorModeValue("gray.50", "gray.700")}
+        textAlign="justify"
+        fontSize="20"
+        className="block sm:hidden"
+      >
+        <Text textAlign="center">Press Enter to jump to next word</Text>
+      </Box>
 
       <Box
         textColor="gray.500"
